@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectChat Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="chat-page">
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="profile-card">
+                <img class="avatar large" src="{{ url_for('uploaded_file', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='images/default-avatar.svg') }}" alt="">
+                <div>
+                    <strong>{{ user.username }}</strong>
+                    <span>Online now</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-heading">
+                    <h2>Chats</h2>
+                    <span id="onlineCount">0</span>
+                </div>
+                <ul id="onlineUsers" class="online-list"></ul>
+            </div>
+        </aside>
+
+        <main class="chat-main">
+            <header class="chat-header">
+                <button class="icon-button mobile-only" id="sidebarToggle" aria-label="Toggle users">☰</button>
+                <div class="chat-user-info"><h1 id="chatTitle">Select a chat</h1>
+                    <p id="typingIndicator">Choose a user from the left side</p>
+                </div>
+                <div class="header-actions">
+                    <input id="searchInput" class="search-input" type="search" placeholder="Search messages">
+                    <button class="icon-button" id="themeToggle" aria-label="Toggle dark mode">◐</button>
+                    <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </header>
+
+            <section class="search-results hidden" id="searchResults"></section>
+            <section class="message-list" id="messageList" aria-live="polite">
+                <div class="empty-chat">Select a user to start a private conversation.</div>
+            </section>
+
+            <section class="composer">
+                <form id="uploadForm" class="upload-form hidden">
+                    <input id="fileInput" name="file" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.txt,.doc,.docx">
+                    <input id="captionInput" name="caption" type="text" maxlength="200" placeholder="Optional caption">
+                    <button type="submit">Share File</button>
+                </form>
+
+                <div class="emoji-picker hidden" id="emojiPicker">
+                    <button type="button">😀</button>
+                    <button type="button">😂</button>
+                    <button type="button">😍</button>
+                    <button type="button">👍</button>
+                    <button type="button">🎉</button>
+                    <button type="button">🔥</button>
+                    <button type="button">✅</button>
+                    <button type="button">🙏</button>
+                </div>
+
+                <form id="messageForm" class="message-form">
+                    <button type="button" class="tool-button" id="emojiToggle" aria-label="Open emoji picker">☺</button>
+                    <button type="button" class="tool-button" id="uploadToggle" aria-label="Attach file">＋</button>
+                    <input id="messageInput" type="text" maxlength="1000" placeholder="Type a message..." autocomplete="off" required>
+                    <button type="submit" class="send-button">Send</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.CHAT_CONFIG = {
+            currentUser: {{ user.to_public_dict() | tojson }},
+            users: {{ users | tojson }},
+            initialMessages: {{ messages | tojson }}
+        };
+    </script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>
